@@ -10,7 +10,10 @@ var postRoutes = require('./app/routes/postRoutes');
 var userRoutes = require('./app/routes/userRoutes');
 
 
-var port = process.env.PORT || 1234;
+//var port = process.env.PORT || 1234;
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+
 mongoose.connect(config.database);
 app.set('magicalSecret',config.secret);
 
@@ -20,7 +23,7 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 
 app.get('/',function (req, res) {
-	res.send("Hello! The api is at http://localhost:"+port+"/api");
+	res.send("Hello! The api is at :"+port+"/api");
 });
 
 var apiRoutes = express.Router();
@@ -107,5 +110,10 @@ apiRoutes.post('/adduser', userRoutes.addUser);
 
 app.use('/api', apiRoutes);
 
-app.listen(port);
-console.log("Listening to port 1234");
+//app.listen(port);
+var server = require("http").Server(app);
+
+server.listen(port, ipaddress);
+
+console.log('Server running at '+ ipaddress + 'port:' + port);
+//console.log("Listening to port 1234");
