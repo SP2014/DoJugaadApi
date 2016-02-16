@@ -14,7 +14,16 @@ var userRoutes = require('./app/routes/userRoutes');
 var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 var port      = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
-mongoose.connect(config.database);
+var url = '127.0.0.1:27017/' + process.env.OPENSHIFT_APP_NAME;
+if (process.env.OPENSHIFT_MONGODB_DB_URL) {
+	url = process.env.OPENSHIFT_MONGODB_DB_URL +
+		process.env.OPENSHIFT_APP_NAME;
+}
+
+
+
+mongoose.connect(url);
+
 app.set('magicalSecret',config.secret);
 
 app.use(bodyParser.urlencoded({extended : false}));
